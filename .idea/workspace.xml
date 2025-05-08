@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e4e74963-ce3a-41a3-887b-02a16f54476b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/config/adni.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/const.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/create_dataset_csv.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/create_dataset_csv_with_path.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/data.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/extract_latents.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/prepare_csv.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/mnist_cond.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/mnist_cond.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset/adni_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/adni_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/blocks.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/blocks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/discriminator.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/discriminator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/lpips.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/lpips.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/unet_cond.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/unet_cond.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/vae.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/vae.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/remote_copy/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/config/minist_cond.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/config/mnist.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/remote_copy/config/mnist.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/dataset/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/dataset/adni_dataset.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/dataset/mnist_dataset.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/models/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/models/blocks.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/models/discriminator.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/models/lpips.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/models/unet.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/models/unet_cond.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/models/vae.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/models/weights/v0.1/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/remote_copy/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/scheduler/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/scheduler/linear_noise_scheduler.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/tools/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/tools/infer_vae.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/tools/sample_ddpm_cond.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/tools/sample_ddpm_vae.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/tools/train_ddpm_cond.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/tools/train_ddpm_vae.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/tools/train_vae.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/utils/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/utils/config_utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/utils/diffusion_utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/remote_copy/utils/extract_mnist_images.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/train_ddpm_cond.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_ddpm_cond.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/train_ddpm_vae.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_ddpm_vae.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/train_vae.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_vae.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/config_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/config_utils.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2uHrfJoxpCjPR1Sw4zlGCox6J2C" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.extract_mnist_images.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.mnist_dataset.executor": "Run",
+    "Python.train_ddpm_cond.executor": "Run",
+    "Python.train_vae.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/songchaehee/Desktop/research/longitudinal",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/models/weights/v0.1" />
+      <recent name="$PROJECT_DIR$/data" />
+      <recent name="$PROJECT_DIR$/data/mnist" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.train_vae">
+    <configuration name="extract_mnist_images" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/utils" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/utils/extract_mnist_images.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="mnist_dataset" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/dataset" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dataset/mnist_dataset.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="train_ddpm_cond" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools/train_ddpm_cond.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="train_vae" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools/train_vae.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.train_vae" />
+        <item itemvalue="Python.extract_mnist_images" />
+        <item itemvalue="Python.train_ddpm_cond" />
+        <item itemvalue="Python.mnist_dataset" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-PY-243.25659.43" />
+        <option value="bundled-python-sdk-181015f7ab06-4df51de95216-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.25659.43" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e4e74963-ce3a-41a3-887b-02a16f54476b" name="Changes" comment="" />
+      <created>1741916442609</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1741916442609</updated>
+      <workItem from="1741916443661" duration="62000" />
+      <workItem from="1741917111360" duration="186204000" />
+      <workItem from="1743123938319" duration="3482000" />
+      <workItem from="1743127602615" duration="10191000" />
+      <workItem from="1743146246598" duration="13128000" />
+      <workItem from="1744548196988" duration="31000" />
+      <workItem from="1744548382729" duration="136731000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/DDPM_practice$extract_mnist_images.coverage" NAME="extract_mnist_images Coverage Results" MODIFIED="1743146851441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
+    <SUITE FILE_PATH="coverage/DDPM_practice$train_ddpm_cond.coverage" NAME="train_ddpm_cond Coverage Results" MODIFIED="1743124058288" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
+    <SUITE FILE_PATH="coverage/DDPM_practice$main.coverage" NAME="main Coverage Results" MODIFIED="1743087298264" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/DDPM_practice$train_vae.coverage" NAME="train_vae Coverage Results" MODIFIED="1743213037423" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
+    <SUITE FILE_PATH="coverage/DDPM_practice$mnist_dataset.coverage" NAME="mnist_dataset Coverage Results" MODIFIED="1743122676365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dataset" />
+  </component>
+</project>
