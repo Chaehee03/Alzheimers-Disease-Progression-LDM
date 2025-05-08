@@ -186,7 +186,7 @@ def train(args):
         model.train()
         recon_losses = []
         kl_losses = []
-        perceptual_losses = [] # LPIPS
+        # perceptual_losses = [] # LPIPS
         adversarial_losses = []
         disc_losses = []
         gen_losses = []
@@ -263,12 +263,12 @@ def train(args):
                     g_loss += train_config['disc_weight'] * disc_fake_loss / acc_steps
 
                 # LPIPS
-                for p in lpips_model.parameters():
-                    p.requires_grad = False
-
-                with torch.no_grad():
-                    lpips_loss = torch.mean(lpips_model(out, im)) # batch-wise mean of (B, 1, 1, 1) tensors.
-                perceptual_losses.append(train_config['perceptual_weight'] * lpips_loss.item())
+                # for p in lpips_model.parameters():
+                #     p.requires_grad = False
+                #
+                # with torch.no_grad():
+                #     lpips_loss = torch.mean(lpips_model(out, im)) # batch-wise mean of (B, 1, 1, 1) tensors.
+                # perceptual_losses.append(train_config['perceptual_weight'] * lpips_loss.item())
                 g_loss += train_config['perceptual_weight'] * lpips_loss / acc_steps
 
                 gen_losses.append(g_loss.item()) # total generator's loss (recon + kl + adversarial + lpips)
@@ -320,22 +320,20 @@ def train(args):
         # disc_losses can be empty if D kicks in after training G for entire dataset.
         if len(disc_losses) > 0:
             print(
-                'Finished epoch: {} | Recon Loss : {:.4f} | Perceptual Loss : {:.4f} | '
+                'Finished epoch: {} | Recon Loss : {:.4f} | '
                 'KL Divergence Loss : {:.4f} | Adversarial Loss: {:.4f} '
                 '| G Loss : {:.4f} | D Loss {:.4f}'.
                 format(epoch + 1,
                        np.mean(recon_losses),
-                       np.mean(perceptual_losses),
                        np.mean(kl_losses),
                        np.mean(adversarial_losses),
                        np.mean(gen_losses),
                        np.mean(disc_losses)))
         else:
-            print('Finished epoch: {} | Recon Loss : {:.4f} | Perceptual Loss : {:.4f} | '
+            print('Finished epoch: {} | Recon Loss : {:.4f} |  '
                   'KL Divergence Loss : {:.4f} | G Loss : {:.4f}'.
                   format(epoch + 1,
                          np.mean(recon_losses),
-                         np.mean(perceptual_losses),
                          np.mean(kl_losses),
                          np.mean(gen_losses)))
 
