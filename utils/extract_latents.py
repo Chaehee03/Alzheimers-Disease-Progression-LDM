@@ -7,7 +7,8 @@ import torch
 from tqdm import tqdm
 from monai import transforms
 from models import const
-from models.vae import VAE
+from models.vqvae import VQVAE
+from torch.optim import Adam
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -28,21 +29,26 @@ if __name__ == '__main__':
     print(config)
     ########################
 
+    dataset_config = config['dataset_params']
     ldm_config = config['ldm_params']
-    vae_config = config['vae_params']
+    vqvae_config = config['vqvae_params']
     train_config = config['train_params']
 
-    vae = VAE(im_channels=vae_config['im_channels'],
-              model_config=ldm_config).to(DEVICE)
+    vae = VQVAE(im_channels=dataset_config['im_channels'],
+              model_config=vqvae_config).to(DEVICE)
     vae.eval()  # don't need training, just create latents
+
+    optimizer_g = Adam(vae.parameters(), lr=train_config['vae_lr'], betas=(0.5, 0.999))
 
     # Load trained vae if checkpoint exists
     if os.path.exists(os.path.join(train_config['task_name'],
-                                   train_config['vae_autoencoder_ckpt_name'])):
-        print('Loaded vae checkpoint')
-        vae.load_state_dict(torch.load(os.path.join(train_config['task_name'],
-                                                    train_config['vae_autoencoder_ckpt_name']),
-                                       map_location=DEVICE))
+                                   train_config['vqvae_autoencoder_ckpt_name'])):
+        print('Loaded vqvae checkpoint')
+        checkpoint = torch.load(os.path.join(train_config['task_name'],
+                                             train_config['vqvae_autoencoder_ckpt_name']))
+        vae.load_state_dict(checkpoint['model_state_dict'])
+        optimizer_g.load_state_dict(checkpoint['optimizer_state_dict'])
+        start_epoch = checkpoint['epoch']
 
     transforms_fn = transforms.Compose([
         transforms.CopyItemsD(keys={'image_path'}, names=['image']),
@@ -54,15 +60,17 @@ if __name__ == '__main__':
     ])
 
     df = pd.read_csv(train_config['dataset_csv'])
+    df = df.dropna(subset=["image_path", "segm_path"])
 
     with torch.no_grad():
         for image_path in tqdm(df.image_path, total=len(df)):
             destpath = image_path.replace('.nii.gz', '_latent.npz').replace('.nii', '_latent.npz')
             if os.path.exists(destpath): continue
             mri_tensor = transforms_fn({'image_path': image_path})['image'].to(DEVICE)
-            mri_latent, _, _ = vae.encode(mri_tensor.unsqueeze(0))
+            mri_latent, _ = vae.encode(mri_tensor.unsqueeze(0))
             mri_latent = mri_latent.cpu().squeeze(0).numpy()
             np.savez_compressed(destpath, data=mri_latent)
             # Add latent_path field to dataset.csv & save
             df.loc[df.image_path == image_path, 'latent_path'] = destpath
-            df.to_csv(train_config['dataset_csv'], index=False)
+
+    df.to_csv(train_config['dataset_csv'], index=False)

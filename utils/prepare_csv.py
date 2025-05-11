@@ -71,6 +71,8 @@ def make_csv_B(df):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('--config', dest='config_path',
+                        default='config/adni.yaml', type=str)
     args = parser.parse_args()
 
     # Read the config file #
@@ -82,11 +84,6 @@ if __name__ == '__main__':
     print(config)
     ########################
 
-    parser.add_argument('--config', dest='config_path',
-                        default='config/adni.yaml', type=str)
-    parser.add_argument('--output_path', type=str, required=True)
-    parser.add_argument('--coarse_regions', type=str, required=True)
-
     train_config = config['train_params']
 
     # read the dataset
@@ -95,9 +92,9 @@ if __name__ == '__main__':
     print()
     print('> Creating CSV A\n')
     csv_A = make_csv_A(df)
-    csv_A.to_csv(os.path.join(args.output_path, 'A.csv'), index=False)
+    csv_A.to_csv(os.path.join(train_config['meta_csv'], 'A.csv'), index=False)
 
     print()
     print('> Creating CSV B\n')
     csv_B = make_csv_B(csv_A)
-    csv_B.to_csv(os.path.join(args.output_path, 'B.csv'), index=False)
+    csv_B.to_csv(os.path.join(train_config['meta_csv'], 'B.csv'), index=False)

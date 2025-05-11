@@ -5,54 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e4e74963-ce3a-41a3-887b-02a16f54476b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/config/adni.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/const.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/create_dataset_csv.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/create_dataset_csv_with_path.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/data.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/extract_latents.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/prepare_csv.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models/vqvae.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tools/train_vqvae.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/mnist_cond.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/mnist_cond.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/adni_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset/adni_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/adni.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/adni.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/blocks.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/blocks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/discriminator.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/discriminator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/lpips.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/lpips.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/unet_cond.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/unet_cond.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/vae.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/vae.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/remote_copy/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/config/minist_cond.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/config/mnist.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/remote_copy/config/mnist.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/dataset/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/dataset/adni_dataset.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/dataset/mnist_dataset.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/models/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/models/blocks.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/models/discriminator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/models/lpips.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/models/unet.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/models/unet_cond.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/models/vae.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/models/weights/v0.1/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/remote_copy/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/scheduler/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/scheduler/linear_noise_scheduler.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/tools/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/tools/infer_vae.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/tools/sample_ddpm_cond.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/tools/sample_ddpm_vae.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/tools/train_ddpm_cond.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/tools/train_ddpm_vae.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/tools/train_vae.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/utils/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/utils/config_utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/utils/diffusion_utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/remote_copy/utils/extract_mnist_images.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tools/train_ddpm_cond.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_ddpm_cond.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools/train_ddpm_vae.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_ddpm_vae.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tools/train_vae.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_vae.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/config_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/config_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/extract_latents.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/extract_latents.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/prepare_csv.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/prepare_csv.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,6 +56,11 @@
     "Python.train_vae.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "WebServerToolWindowPanel.toolwindow.highlight.mappings": "true",
+    "WebServerToolWindowPanel.toolwindow.highlight.symlinks": "true",
+    "WebServerToolWindowPanel.toolwindow.show.date": "false",
+    "WebServerToolWindowPanel.toolwindow.show.permissions": "false",
+    "WebServerToolWindowPanel.toolwindow.show.size": "false",
     "git-widget-placeholder": "main",
     "last_opened_file_path": "/Users/songchaehee/Desktop/research/longitudinal",
     "node.js.detected.package.eslint": "true",
@@ -111,6 +80,50 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.train_vae">
+    <configuration default="true" type="DjangoTestsConfigurationType">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="TARGET" value="" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="extract_mnist_images" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="DDPM" />
       <option name="ENV_FILES" value="" />
@@ -226,6 +239,103 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration default="true" type="Python.FlaskServer">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docs" factoryName="Docutils task">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="docutils_input_file" value="" />
+      <option name="docutils_output_file" value="" />
+      <option name="docutils_params" value="" />
+      <option name="docutils_task" value="" />
+      <option name="docutils_open_in_browser" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docs" factoryName="Sphinx task">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="docutils_input_file" value="" />
+      <option name="docutils_output_file" value="" />
+      <option name="docutils_params" value="" />
+      <option name="docutils_task" value="" />
+      <option name="docutils_open_in_browser" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Autodetect">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <module name="DDPM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.train_vae" />
@@ -258,6 +368,10 @@
       <workItem from="1743146246598" duration="13128000" />
       <workItem from="1744548196988" duration="31000" />
       <workItem from="1744548382729" duration="136731000" />
+      <workItem from="1746609251578" duration="26336000" />
+      <workItem from="1746851663888" duration="37000" />
+      <workItem from="1746851708662" duration="250000" />
+      <workItem from="1746852057137" duration="32225000" />
     </task>
     <servers />
   </component>

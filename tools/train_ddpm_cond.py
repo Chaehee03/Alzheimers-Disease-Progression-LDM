@@ -6,7 +6,7 @@ from tqdm import tqdm
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 from models.unet_cond import UNet
-from models.vae import VAE
+from models.vqvae import VQVAE
 from scheduler.linear_noise_scheduler import LinearNoiseScheduler
 from utils import utils
 from utils.config_utils import *
@@ -95,7 +95,7 @@ def train(args):
 
     diffusion_config = config['diffusion_params']
     ldm_config = config['ldm_params']
-    vae_config = config['vae_params']
+    vqvae_config = config['vqvae_params']
     train_config = config['train_params']
 
     # Check missing latent paths
@@ -137,6 +137,8 @@ def train(args):
     ])
 
     dataset_df = pd.read_csv(train_config['dataset_csv'])
+    dataset_df = dataset_df.dropna(subset=["image_path", "segm_path"])
+    
     train_df = dataset_df[dataset_df.split == 'train']
     valid_df = dataset_df[dataset_df.split == 'valid']
     trainset = get_dataset_from_pd(train_df, transforms_fn, train_config['cache_dir'])
@@ -158,7 +160,7 @@ def train(args):
     ############################
 
     # Instantiate the model
-    unet = UNet(im_channels=vae_config['z_channels'],
+    unet = UNet(im_channels=vqvae_config['z_channels'],
                  model_config=ldm_config).to(device) # load model to GPU/CPU
     unet.train()
 
@@ -232,27 +234,27 @@ def train(args):
             print(f"[{mode}] Epoch {epoch_idx + 1}: Loss = {epoch_loss / len(loader):.4f}")
 
             ########## Visualize result with TensorBoard #########
-            print('Loading vae model.')
-            vae = VAE(im_channels=vae_config['im_channels'],
+            print('Loading vqvae model.')
+            vqvae = VQVAE(im_channels=vqvae_config['im_channels'],
                       model_config=ldm_config).to(device)
-            vae.eval()
+            vqvae.eval()
 
-            # Load trained vae if checkpoint exists
+            # Load trained vqvae if checkpoint exists
             if os.path.exists(os.path.join(train_config['task_name'],
-                                           train_config['vae_autoencoder_ckpt_name'])):
-                print('Loaded vae checkpoint')
-                vae.load_state_dict(torch.load(os.path.join(train_config['task_name'],
-                                                            train_config['vae_autoencoder_ckpt_name']),
+                                           train_config['vqvae_autoencoder_ckpt_name'])):
+                print('Loaded vqvae checkpoint')
+                vqvae.load_state_dict(torch.load(os.path.join(train_config['task_name'],
+                                                            train_config['vqvae_autoencoder_ckpt_name']),
                                                map_location=device))
             else:
-                raise Exception('VAE checkpoint not found')
+                raise Exception('VQVAE checkpoint not found')
 
             images_to_tensorboard(
                 writer=writer,
                 epoch=epoch_idx,
                 mode=mode,
-                autoencoder=vae,
-                z_channels=vae_config['z_channels'],
+                autoencoder=vqvae,
+                z_channels=vqvae_config['z_channels'],
                 diffusion=unet,
                 scale_factor=scale_factor
             )

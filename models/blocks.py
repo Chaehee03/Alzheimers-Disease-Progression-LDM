@@ -286,7 +286,7 @@ class UpBlock(nn.Module):
         if self.attn:
             self.attention_norms = nn.ModuleList(
                 [
-                    nn.GroupNorm(8, out_channels)
+                    nn.GroupNorm(norm_channels, out_channels)
                     for _ in range(num_layers)
                 ]
             )

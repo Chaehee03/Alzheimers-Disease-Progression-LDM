@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import tqdm
 
-from models.lpips import LPIPS3D
+# from models.lpips import LPIPS3D
 from models.vae import VAE
 from models.discriminator import Discriminator
 from torch.utils.data.dataloader import DataLoader
@@ -143,14 +143,14 @@ def train(args):
 
     # Instantiate LPIPS and Disc
     # freezing part is in lpips.py -> don't need to freeze lpips
-    lpips_model = LPIPS3D().eval().to(device)
+    # lpips_model = LPIPS3D().eval().to(device)
     discriminator = Discriminator(in_channels=dataset_config['im_channels']).to(device)
 
     optimizer_g = Adam(model.parameters(), lr=train_config['vae_lr'], betas = (0.5, 0.999))
     optimizer_d = Adam(discriminator.parameters(), lr = train_config['vae_lr'], betas = (0.5, 0.999))
 
     # step point when discriminator kicks in. (starts to train generating fake images)
-    disc_step_start = train_config['disc_step_start']
+    disc_step_start = len(train_loader)
 
     # Gradient Accumulation
     # Useful when dealing with high-resolution images
@@ -182,6 +182,17 @@ def train(args):
         start_epoch = checkpoint['epoch']
         step_count = checkpoint['step_count']
 
+    max_kl = train_config['kl_weight']  # 예: 1e-4
+    initial_kl = train_config.get('kl_start', 1e-6)
+    kl_anneal_epochs = train_config.get('kl_anneal_epochs', 10)
+
+    pretrain_epochs = train_config.get('pretrain_epochs', 5)
+    disc_schedule = [
+        (pretrain_epochs, 0.1),  # epoch ≥ 5 → disc_weight = 0.1
+        (pretrain_epochs + 5, 0.3),  # epoch ≥ 10 → disc_weight = 0.3
+        (pretrain_epochs + 10, 0.5)  # epoch ≥ 15 → disc_weight = 0.5 (최대)
+    ]
+
     for epoch in range(start_epoch, num_epochs):
         model.train()
         recon_losses = []
@@ -194,6 +205,22 @@ def train(args):
         # Initialize gradients to zeros
         optimizer_g.zero_grad()
         optimizer_d.zero_grad()
+
+        if epoch < kl_anneal_epochs:
+            # 선형 증가: epoch=0→initial, epoch=kl_anneal_epochs→max_kl
+            kl_weight = initial_kl + (max_kl - initial_kl) * (epoch / kl_anneal_epochs)
+        else:
+            kl_weight = max_kl
+
+        # 1) Pretrain 기간 (=VAE만 학습): GAN weight=0
+        if epoch < pretrain_epochs:
+            disc_weight = 0.0
+        else:
+            # 2) 스케줄 테이블을 순회하면서, 해당 epoch 에 맞는 값 선택
+            disc_weight = 0.0
+            for e_start, w in disc_schedule:
+                if epoch >= e_start:
+                    disc_weight = w
 
 
         for sample in tqdm.tqdm(train_loader, desc="Training"):
@@ -210,10 +237,12 @@ def train(args):
                 if step_count % image_save_steps == 0 or step_count == 1: # save initially & per image_save_steps.
                     sample_size = min(8, im.shape[0]) # save max 8 samples
                     # model output image normalization for saving
-                    save_output = torch.clamp(out[:sample_size], -1, 1).detach().cpu()
-                    save_output = (save_output + 1) / 2 # [-1, 1] -> [0, 1]
-                    # original input image normalization for saving
-                    save_input = ((im[:sample_size] + 1) / 2).detach().cpu()
+                    # save_output = torch.clamp(out[:sample_size], -1, 1).detach().cpu()
+                    # save_output = (save_output + 1) / 2 # [-1, 1] -> [0, 1]
+                    # # original input image normalization for saving
+                    # save_input = ((im[:sample_size] + 1) / 2).detach().cpu()
+                    save_output = torch.clamp(out[:sample_size], 0, 1).detach().cpu()
+                    save_input = torch.clamp(im[:sample_size], 0, 1).detach().cpu()
 
                     B, C, D, H, W = save_input.shape
 
@@ -249,18 +278,18 @@ def train(args):
                 # KL divergence loss(VAE)
                 kl_loss = kl_divergence(mean, logvar)/ acc_steps
 
-                g_loss = recon_loss + train_config['kl_weight'] * kl_loss
-                kl_losses.append(train_config['kl_weight'] * kl_loss.item())
+                g_loss = recon_loss + kl_weight * kl_loss
+                kl_losses.append(kl_weight * kl_loss.item())
 
                 # Adversarial loss term is added after step count passed disc_step_start.
-                if step_count > disc_step_start:
+                if step_count >= disc_step_start:
                     disc_fake_pred = discriminator(model_output[0])
                     # Generators takes only a batch size of fake samples for training.
                     disc_fake_loss = disc_criterion(disc_fake_pred,
                                                     torch.ones(disc_fake_pred.shape,
                                                                device = disc_fake_pred.device)) # ground truth(G): fake -> 1
-                    adversarial_losses.append(train_config['disc_weight'] * disc_fake_loss.item())
-                    g_loss += train_config['disc_weight'] * disc_fake_loss / acc_steps
+                    adversarial_losses.append(disc_weight * disc_fake_loss.item())
+                    g_loss += disc_weight * disc_fake_loss / acc_steps
 
                 # LPIPS
                 # for p in lpips_model.parameters():
@@ -269,7 +298,7 @@ def train(args):
                 # with torch.no_grad():
                 #     lpips_loss = torch.mean(lpips_model(out, im)) # batch-wise mean of (B, 1, 1, 1) tensors.
                 # perceptual_losses.append(train_config['perceptual_weight'] * lpips_loss.item())
-                g_loss += train_config['perceptual_weight'] * lpips_loss / acc_steps
+                # g_loss += train_config['perceptual_weight'] * lpips_loss / acc_steps
 
                 gen_losses.append(g_loss.item()) # total generator's loss (recon + kl + adversarial + lpips)
 
@@ -291,7 +320,7 @@ def train(args):
                                                     torch.ones(disc_real_pred.shape, # ground truth(D): real -> 1
                                                                device = disc_real_pred.device))
                     # Total loss = Adding BCE of y=0 (ground truth: fake) & y=1 (ground truth: real)
-                    disc_loss = train_config['disc_weight'] * (disc_fake_loss + disc_real_loss) / 2
+                    disc_loss = disc_weight * (disc_fake_loss + disc_real_loss) / 2
                     disc_losses.append(disc_loss.item())
                     disc_loss = disc_loss / acc_steps
 
