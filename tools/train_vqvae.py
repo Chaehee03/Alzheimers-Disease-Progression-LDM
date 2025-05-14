@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from models.vqvae import VQVAE
+from models.lpips import LPIPS
 from models.discriminator import Discriminator
 from torch.utils.data.dataloader import DataLoader
 from torch.optim import Adam
@@ -24,6 +25,42 @@ scaler_d = GradScaler()
 
 ssim_metric = SSIMMetric(spatial_dims=3, data_range=1.0)
 psnr_metric = PSNRMetric(max_val=1.0)
+
+def get_commitment_beta(epoch, max_beta=0.5, warmup_epochs=10):
+    """
+    Warmup schedule for commitment beta.
+    Linearly increases from 0 to max_beta over `warmup_epochs`.
+    """
+    return min(max_beta, (epoch + 1) / warmup_epochs * max_beta)
+
+
+def compute_lpips_2d_slicewise(recon_volume, target_volume, lpips_model):
+    """
+    recon_volume, target_volume: (B, 1, D, H, W) in [0, 1]
+    LPIPS는 (B, 3, H, W) 이미지를 요구하므로 각 슬라이스를 3채널로 변환 후 처리
+    """
+    B, C, D, H, W = recon_volume.shape
+    assert C == 1, "Expected single channel input"
+
+    lpips_scores = []
+    for b in range(B):
+        for d in range(D):
+            pred = recon_volume[b, 0, d]  # (H, W)
+            gt = target_volume[b, 0, d]   # (H, W)
+
+            # Normalize to [0, 1]
+            pred = (pred - pred.min()) / (pred.max() - pred.min() + 1e-8)
+            gt = (gt - gt.min()) / (gt.max() - gt.min() + 1e-8)
+
+            # Convert to 3-channel image: (3, H, W)
+            pred_rgb = pred.repeat(3, 1, 1).unsqueeze(0).to(device)
+            gt_rgb = gt.repeat(3, 1, 1).unsqueeze(0).to(device)
+
+            score = lpips_model(pred_rgb, gt_rgb, normalize=True)
+            lpips_scores.append(score.item())
+
+    return np.mean(lpips_scores)
+
 
 def get_disc_weight(epoch, total_epochs):
     if epoch < 5:
@@ -129,6 +166,8 @@ def train(args):
                               persistent_workers=True,
                               pin_memory=True)
 
+    val_fixed_sample = next(iter(valid_loader))['image'].float().to(device)[:1]
+
     # Create output directories
     if not os.path.exists(train_config['task_name']):
         os.mkdir(train_config['task_name'])
@@ -140,6 +179,7 @@ def train(args):
     # Disc Loss can even be BCEWithLogits
     disc_criterion = torch.nn.MSELoss()
 
+    lpips_model = LPIPS().eval().to(device)
     discriminator = Discriminator(in_channels=dataset_config['im_channels']).to(device)
 
     optimizer_d = Adam(discriminator.parameters(), lr=train_config['vae_lr'], betas=(0.5, 0.999))
@@ -163,7 +203,7 @@ def train(args):
                                                     train_config['vqvae_autoencoder_ckpt_name']))
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer_g.load_state_dict(checkpoint['optimizer_state_dict'])
-        start_epoch = checkpoint['epoch'] + 1
+        start_epoch = checkpoint['epoch']
         step_count = checkpoint['step_count']
 
 
@@ -174,7 +214,7 @@ def train(args):
                                                   train_config['vqvae_discriminator_ckpt_name']))
         discriminator.load_state_dict(checkpoint['model_state_dict'])
         optimizer_d.load_state_dict(checkpoint['optimizer_state_dict'])
-        start_epoch = checkpoint['epoch'] + 1
+        start_epoch = checkpoint['epoch']
         step_count = checkpoint['step_count']
 
 
@@ -186,7 +226,7 @@ def train(args):
         recon_losses = []
         codebook_losses = []
         # commitment_losses = []
-        # perceptual_losses = []
+        perceptual_losses = []
         disc_losses = []
         gen_losses = []
 
@@ -194,6 +234,8 @@ def train(args):
         optimizer_d.zero_grad()
 
         disc_weight = get_disc_weight(epoch_idx, total_epochs=num_epochs)
+
+        used_indices = set()
 
         for sample in tqdm(train_loader, desc="Training"):
             step_count += 1
@@ -204,67 +246,23 @@ def train(args):
                 model_output = model(im)
                 output, z, quantize_losses = model_output
 
-                # Image Saving Logic
-                if step_count % len(train_loader) == 1:
-                    model.eval()
-                    with torch.no_grad():
-                        val_input = val_input_fixed.clone()
-                        val_output, _, _ = model(val_input)
+                with torch.no_grad():
+                    latent, _ = model.encode(im)
+                    _, _, encoding_indices = model.quantize(latent)
+                    used_indices.update(torch.unique(encoding_indices).cpu().tolist())
 
-                        val_input = torch.clamp(val_input, 0, 1)
-                        val_output = torch.clamp(val_output, 0, 1)
-
-                        ssim_val = ssim_metric(val_output.float(), val_input.float()).item()
-                        psnr_val = psnr_metric(val_output.float(), val_input.float()).item()
-
-                        print(f"[Epoch {epoch_idx + 1}] SSIM: {ssim_val:.4f}, PSNR: {psnr_val:.2f}")
-                        # Save Best Checkpoint
-                        improved = False
-                        if psnr_val > best_psnr:
-                            best_psnr = psnr_val
-                            improved = True
-                            print(f"[Best Checkpoint] New best PSNR: {psnr_val:.2f} at epoch {epoch_idx + 1}")
-
-                            torch.save({
-                                'epoch': epoch_idx,
-                                'psnr': psnr_val,
-                                'ssim': ssim_val,
-                                'model_state_dict': model.state_dict(),
-                                'optimizer_state_dict': optimizer_g.state_dict(),
-                            }, os.path.join(train_config['task_name'], 'vqvae_best_checkpoint.pth'))
-                        if ssim_val > best_ssim:
-                            best_ssim = ssim_val
-                            improved = True
-
-                        if improved:
-                            epochs_without_improvement = 0
-                        else:
-                            epochs_without_improvement += 1
-                            print(f"[EarlyStopping] No improvement. Count: {epochs_without_improvement}")
-
-                        if epochs_without_improvement >= early_stopping_patience:
-                            print(
-                                f"[EarlyStopping] Triggered at epoch {epoch_idx + 1}. Best PSNR: {best_psnr:.2f}, SSIM: {best_ssim:.4f}")
-                            break
-
-                        model.train()
-                    sample_size = 1
-                    save_output = torch.clamp(output[:sample_size], 0, 1).detach().cpu()
-                    save_input = torch.clamp(im[:sample_size], 0, 1).detach().cpu()
-
-                    print(f"[Debug] save_input min={save_input.min().item()}, max={save_input.max().item()}")
-
-                    save_dir = os.path.join(train_config['task_name'], 'vqvae_gif_samples')
-                    save_gif(save_input, save_output, epoch_idx, save_dir)
+                    flat = latent.permute(0, 2, 3, 4, 1).reshape(-1, latent.shape[1])
+                    print(f"[DEBUG][Epoch {epoch_idx + 1}] latent std: {flat.std().item():.6f}")
 
                 ######### Optimize Generator ##########
                 # L2 Loss
                 recon_loss = recon_criterion(output, im)
                 recon_losses.append(recon_loss.item())
                 recon_loss = recon_loss / acc_steps
+                commitment_beta = get_commitment_beta(epoch_idx)
                 g_loss = (recon_loss +
                           (train_config['codebook_weight'] * quantize_losses['codebook_loss'] / acc_steps) +
-                          (train_config['commitment_beta'] * quantize_losses['commitment_loss'] / acc_steps))
+                          (commitment_beta * quantize_losses['commitment_loss'] / acc_steps))
                 codebook_losses.append(train_config['codebook_weight'] * quantize_losses['codebook_loss'].item())
                 # Adversarial loss only if disc_step_start steps passed
                 if step_count >= disc_step_start:
@@ -274,9 +272,13 @@ def train(args):
                                                                device=disc_fake_pred.device))
                     gen_losses.append(disc_weight * disc_fake_loss.item())
                     g_loss += disc_weight * disc_fake_loss / acc_steps
-            # lpips_loss = torch.mean(lpips_model(output, im))
-            # perceptual_losses.append(train_config['perceptual_weight'] * lpips_loss.item())
-            # g_loss += train_config['perceptual_weight'] * lpips_loss / acc_steps
+            with torch.no_grad():
+                model.eval()
+                lpips_loss = compute_lpips_2d_slicewise(output, im, lpips_model)
+                model.train()
+            perceptual_losses.append(train_config['perceptual_weight'] * lpips_loss)
+            g_loss += (train_config['perceptual_weight'] * lpips_loss / acc_steps)
+
             scaler_g.scale(g_loss).backward()
             #####################################
 
@@ -317,20 +319,59 @@ def train(args):
                 scaler_g.update()
                 optimizer_g.zero_grad()
 
+        # Test on Validation Set
+        model.eval()
+        with torch.no_grad():
+            # Evaluation Metric (SSIM, PSNR)
+            all_ssim = []
+            all_psnr = []
+            for sample in valid_loader:
+                val_input = sample['image'].float().to(device)
+                val_output, _, _ = model(val_input)
+
+                val_input = torch.clamp(val_input, 0, 1)
+                val_output = torch.clamp(val_output, 0, 1)
+
+                ssim_score = ssim_metric(val_output, val_input).item()
+                psnr_score = psnr_metric(val_output, val_input).item()
+                all_ssim.append(ssim_score)
+                all_psnr.append(psnr_score)
+
+            # Sampled GIF Saving Logic
+            val_recon, _, _ = model(val_fixed_sample)
+            save_dir = os.path.join(train_config['task_name'], 'vqvae_gif_samples')
+            save_gif(val_fixed_sample.cpu(), val_recon.cpu(), epoch_idx + 1, save_dir)
+        model.train()
+        avg_psnr = np.mean(all_psnr)
+        avg_ssim = np.mean(all_ssim)
+
+        codebook_coverage = len(used_indices) / model.embedding.num_embeddings * 100
+
         if len(disc_losses) > 0 and len(gen_losses) > 0:
             print(
-                'Finished epoch: {} | Recon Loss : {:.4f} | '
-                'Codebook : {:.4f} | G Loss : {:.4f} | D Loss {:.4f}'.
+                'Finished epoch: {} | Recon Loss : {:.4f} | Perceptual Loss : {:.4f} | '
+                'Codebook : {:.4f} | Codebook usage: {:.2f} | G Loss : {:.4f} | D Loss {:.4f} |'
+                'SSIM: {:.4f} |  PSNR: {:.2f}'.
                 format(epoch_idx + 1,
                        np.mean(recon_losses),
+                       np.mean(perceptual_losses),
                        np.mean(codebook_losses),
+                       codebook_coverage,
                        np.mean(gen_losses),
-                       np.mean(disc_losses)), flush=True)
+                       np.mean(disc_losses),
+                       np.mean(all_ssim),
+                       np.mean(all_psnr)), flush=True)
         else:
-            print('Finished epoch: {} | Recon Loss : {:.4f} | Codebook : {:.4f}'.
+            print('Finished epoch: {} | Recon Loss : {:.4f} | Perceptual Loss : {:.4f} | '
+                  'Codebook : {:.4f} | Codebook usage: {:.2f} | '
+                  'SSIM: {:.4f} |  PSNR: {:.2f}'.
                   format(epoch_idx + 1,
                          np.mean(recon_losses),
-                         np.mean(codebook_losses)), flush=True)
+                         np.mean(perceptual_losses),
+                         np.mean(codebook_losses),
+                         codebook_coverage,
+                         np.mean(all_ssim),
+                         np.mean(all_psnr)), flush=True)
 
         torch.save({
             'epoch': epoch_idx,
@@ -346,19 +387,34 @@ def train(args):
             'optimizer_state_dict': optimizer_d.state_dict(),
         }, os.path.join(train_config['task_name'], train_config['vqvae_discriminator_ckpt_name']))
 
+        # Save Best Checkpoint
+        improved = False
+        if avg_psnr > best_psnr:
+            best_psnr = avg_psnr
+            improved = True
+            print(f"[Best Checkpoint] New best PSNR: {avg_psnr:.2f} at epoch {epoch_idx + 1}")
 
-    model.eval()
-    with torch.no_grad():
-        val_input = val_input_fixed.clone()
-        val_output, _, _ = model(val_input)
+            torch.save({
+                'epoch': epoch_idx,
+                'psnr': avg_psnr,
+                'ssim': avg_ssim,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer_g.state_dict(),
+            }, os.path.join(train_config['task_name'], 'vqvae_best_checkpoint_2.pth'))
+        if avg_ssim > best_ssim:
+            best_ssim = avg_ssim
+            improved = True
 
-        val_input = torch.clamp(val_input, 0, 1)
-        val_output = torch.clamp(val_output, 0, 1)
+        if improved:
+            epochs_without_improvement = 0
+        else:
+            epochs_without_improvement += 1
+            print(f"[EarlyStopping] No improvement. Count: {epochs_without_improvement}")
 
-        ssim_val = ssim_metric(val_output.float(), val_input.float()).item()
-        psnr_val = psnr_metric(val_output.float(), val_input.float()).item()
-
-        print(f"[Final] SSIM: {ssim_val:.4f}, PSNR: {psnr_val:.2f}")
+        if epochs_without_improvement >= early_stopping_patience:
+            print(
+                f"[EarlyStopping] Triggered at epoch {epoch_idx + 1}. Best PSNR: {best_psnr:.2f}, SSIM: {best_ssim:.4f}")
+            break
 
     print('Done Training...')
 
@@ -369,3 +425,7 @@ if __name__ == '__main__':
                         default='config/adni.yaml', type=str)
     args = parser.parse_args()
     train(args)
+
+
+
+

@@ -4,19 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e4e74963-ce3a-41a3-887b-02a16f54476b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/models/vqvae.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tools/train_vqvae.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="e4e74963-ce3a-41a3-887b-02a16f54476b" name="Changes" comment="add VQVAE and train vqvae">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/adni.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/adni.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/blocks.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/blocks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/vae.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/vae.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/train_ddpm_cond.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_ddpm_cond.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/train_ddpm_vae.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_ddpm_vae.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tools/train_vae.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_vae.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/extract_latents.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/extract_latents.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/prepare_csv.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/prepare_csv.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/lpips.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/lpips.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/train_vqvae.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/train_vqvae.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -371,8 +363,17 @@
       <workItem from="1746609251578" duration="26336000" />
       <workItem from="1746851663888" duration="37000" />
       <workItem from="1746851708662" duration="250000" />
-      <workItem from="1746852057137" duration="32225000" />
+      <workItem from="1746852057137" duration="43147000" />
     </task>
+    <task id="LOCAL-00001" summary="add VQVAE and train vqvae">
+      <option name="closed" value="true" />
+      <created>1746938616637</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1746938616637</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -388,6 +389,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add VQVAE and train vqvae" />
+    <option name="LAST_COMMIT_MESSAGE" value="add VQVAE and train vqvae" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DDPM_practice$extract_mnist_images.coverage" NAME="extract_mnist_images Coverage Results" MODIFIED="1743146851441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />

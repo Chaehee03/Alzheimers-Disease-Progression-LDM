@@ -48,7 +48,8 @@ def make_csv_B(df):
     Creates CSV B, which contains all possible pairs (x_a, x_b) such that
     both scans belong to the same patient and scan x_a is acquired before scan x_b.
     """
-    df['acq_date'] = pd.to_datetime(df['Acq Date'], format='%m/%d/%Y')
+
+    df['acq_date'] = pd.to_datetime(df['acq_date'])
 
     sorting_field = 'acq_date' if 'acq_date' in df.columns else 'age'
 
@@ -90,11 +91,29 @@ if __name__ == '__main__':
     df = pd.read_csv(train_config['dataset_csv'])
 
     print()
+    a_csv_path = os.path.join(train_config['meta_csv'], 'A.csv')
+    b_csv_path = os.path.join(train_config['meta_csv'], 'B.csv')
+
+
     print('> Creating CSV A\n')
     csv_A = make_csv_A(df)
-    csv_A.to_csv(os.path.join(train_config['meta_csv'], 'A.csv'), index=False)
+    csv_A.to_csv(a_csv_path, index=False)
 
-    print()
     print('> Creating CSV B\n')
     csv_B = make_csv_B(csv_A)
-    csv_B.to_csv(os.path.join(train_config['meta_csv'], 'B.csv'), index=False)
+    csv_B.to_csv(b_csv_path, index=False)
+
+    # if os.path.exists(a_csv_path):
+    #     print(f"A.csv already exists at {a_csv_path}")
+    # else:
+    #     print('> Creating CSV A\n')
+    #     csv_A = make_csv_A(df)
+    #     csv_A.to_csv(a_csv_path, index=False)
+    #
+    # if os.path.exists(b_csv_path):
+    #     print(f"B.csv already exists at {b_csv_path}")
+    # else:
+    #     print('> Creating CSV B\n')
+    #     csv_A = pd.read_csv(a_csv_path)
+    #     csv_B = make_csv_B(csv_A)
+    #     csv_B.to_csv(b_csv_path, index=False)

@@ -65,7 +65,7 @@ if __name__ == '__main__':
     with torch.no_grad():
         for image_path in tqdm(df.image_path, total=len(df)):
             destpath = image_path.replace('.nii.gz', '_latent.npz').replace('.nii', '_latent.npz')
-            if os.path.exists(destpath): continue
+            # if os.path.exists(destpath): continue
             mri_tensor = transforms_fn({'image_path': image_path})['image'].to(DEVICE)
             mri_latent, _ = vae.encode(mri_tensor.unsqueeze(0))
             mri_latent = mri_latent.cpu().squeeze(0).numpy()

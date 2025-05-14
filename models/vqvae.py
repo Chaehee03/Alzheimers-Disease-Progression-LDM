@@ -51,6 +51,7 @@ class VQVAE(nn.Module):
                                               t_emb_dim=None,
                                               num_heads=self.num_heads,
                                               num_layers=self.num_mid_layers,
+                                              attn=self.attns[i],
                                               norm_channels=self.norm_channels))
 
         self.encoder_norm_out = nn.GroupNorm(self.norm_channels, self.down_channels[-1])
@@ -76,11 +77,13 @@ class VQVAE(nn.Module):
                                               t_emb_dim=None,
                                               num_heads=self.num_heads,
                                               num_layers=self.num_mid_layers,
+                                              attn=self.attns[i - 1],
                                               norm_channels=self.norm_channels))
 
         self.decoder_layers = nn.ModuleList([])
         for i in reversed(range(1, len(self.down_channels))):
-            self.decoder_layers.append(UpBlock(self.down_channels[i], self.down_channels[i - 1],
+            self.decoder_layers.append(UpBlock(self.down_channels[i],
+                                               self.down_channels[i - 1],
                                                t_emb_dim=None, up_sample=self.down_sample[i - 1],
                                                num_heads=self.num_heads,
                                                num_layers=self.num_up_layers,

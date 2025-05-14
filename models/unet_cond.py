@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from models.blocks import get_time_embedding
-from models.blocks import DownBlock, MidBlock, UpBlock
+from models.blocks import DownBlockUnet, MidBlockUnet, UpBlockUnet
 from utils.config_utils import *
 
 
@@ -39,18 +39,20 @@ class UNet(nn.Module):
                 self.attention_levels = self.condition_config['context_condition_config']['attention_levels']
                 self.context_embed_dim = self.condition_config['context_condition_config']['context_embed_dim']
 
+        self.cond = self.context_cond
+
         self.t_proj = nn.Sequential(
             nn.Linear(self.t_emb_dim, self.t_emb_dim),
             nn.SiLU(),
             nn.Linear(self.t_emb_dim, self.t_emb_dim)
         )
-        self.conv_in = nn.Conv2d(im_channels, self.down_channels[0], kernel_size=3, padding=1)
+        self.conv_in = nn.Conv3d(im_channels, self.down_channels[0], kernel_size=3, padding=1)
 
         self.up_sample = list(reversed(self.down_sample))
         self.downs = nn.ModuleList([])
 
         for i in range(len(self.down_channels) - 1):
-            self.downs.append(DownBlock(self.down_channels[i], self.down_channels[i+1], self.t_emb_dim,
+            self.downs.append(DownBlockUnet(self.down_channels[i], self.down_channels[i+1], self.t_emb_dim,
                                         down_sample=self.down_sample[i],
                                         num_heads=self.num_heads,
                                         num_layers=self.num_down_layers,
@@ -61,24 +63,39 @@ class UNet(nn.Module):
 
         self.mids = nn.ModuleList([])
         for i in range(len(self.mid_channels) - 1):
-            self.mids.append(MidBlock(self.mid_channels[i], self.mid_channels[i+1], self.t_emb_dim,
+            self.mids.append(MidBlockUnet(self.mid_channels[i], self.mid_channels[i+1], self.t_emb_dim,
                                       num_heads=self.num_heads,
                                       num_layers=self.num_mid_layers,
+                                      attn=True,
                                       norm_channels=self.norm_channels,
                                       cross_attn=self.context_cond,
                                       context_dim=self.context_embed_dim))
 
+        attns_up = list(reversed(self.attns))
         self.ups = nn.ModuleList([])
-        for i in reversed(range(len(self.down_channels) - 1)):
-            self.ups.append(UpBlock(self.down_channels[i]*2, self.down_channels[i-1] if i != 0 else self.conv_out_channels,
-                                    self.t_emb_dim, up_sample=self.down_sample[i],
-                                    num_heads=self.num_heads,
-                                    num_layers=self.num_up_layers,
-                                    attn=1 - self.attns[i],
-                                    norm_channels=self.norm_channels))
+        prev = self.mid_channels[-1]
 
-            self.norm_out = nn.GroupNorm(self.norm_channels, self.conv_out_channels)
-            self.conv_out = nn.Conv2d(self.conv_out_channels, im_channels, kernel_size=3, padding=1)
+        for idx, i in enumerate(reversed(range(len(self.down_channels) - 1))):
+            skip = self.down_channels[i]
+            out = self.down_channels[i - 1] if i else self.conv_out_channels
+
+            self.ups.append(
+                UpBlockUnet(
+                    in_channels=prev,
+                    skip_channels=skip,
+                    out_channels=out,
+                    t_emb_dim=self.t_emb_dim,
+                    up_sample=self.down_sample[i],
+                    num_heads=self.num_heads,
+                    num_layers=self.num_up_layers,
+                    attn=attns_up[idx],
+                    norm_channels=self.norm_channels
+                )
+            )
+            prev = out
+
+        self.norm_out = nn.GroupNorm(self.norm_channels, self.conv_out_channels)
+        self.conv_out = nn.Conv3d(self.conv_out_channels, im_channels, kernel_size=3, padding=1)
 
     def forward(self, x, t, cond_input = None):
         if self.cond:
