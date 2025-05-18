@@ -7,7 +7,7 @@ from utils.config_utils import *
 
 
 class UNet(nn.Module):
-    def __init__(self, im_channels, model_config):
+    def __init__(self, im_channels, model_config, use_up=True):
         super().__init__()
         self.down_channels = model_config['down_channels']
         self.mid_channels = model_config['mid_channels']
@@ -75,24 +75,25 @@ class UNet(nn.Module):
         self.ups = nn.ModuleList([])
         prev = self.mid_channels[-1]
 
-        for idx, i in enumerate(reversed(range(len(self.down_channels) - 1))):
-            skip = self.down_channels[i]
-            out = self.down_channels[i - 1] if i else self.conv_out_channels
+        if use_up:
+            for idx, i in enumerate(reversed(range(len(self.down_channels) - 1))):
+                skip = self.down_channels[i]
+                out = self.down_channels[i - 1] if i else self.conv_out_channels
 
-            self.ups.append(
-                UpBlockUnet(
-                    in_channels=prev,
-                    skip_channels=skip,
-                    out_channels=out,
-                    t_emb_dim=self.t_emb_dim,
-                    up_sample=self.down_sample[i],
-                    num_heads=self.num_heads,
-                    num_layers=self.num_up_layers,
-                    attn=attns_up[idx],
-                    norm_channels=self.norm_channels
+                self.ups.append(
+                    UpBlockUnet(
+                        in_channels=prev,
+                        skip_channels=skip,
+                        out_channels=out,
+                        t_emb_dim=self.t_emb_dim,
+                        up_sample=self.down_sample[i],
+                        num_heads=self.num_heads,
+                        num_layers=self.num_up_layers,
+                        attn=attns_up[idx],
+                        norm_channels=self.norm_channels
+                    )
                 )
-            )
-            prev = out
+                prev = out
 
         self.norm_out = nn.GroupNorm(self.norm_channels, self.conv_out_channels)
         self.conv_out = nn.Conv3d(self.conv_out_channels, im_channels, kernel_size=3, padding=1)

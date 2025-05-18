@@ -24,7 +24,7 @@ from monai.transforms import (
 from monai.data.image_reader import NumpyReader
 from torch.utils.data.dataloader import default_collate
 import math
-import datetime
+
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -124,44 +124,6 @@ def images_to_tensorboard(
             grid = axis_montage(recon_image[0, 0], axis=axis, fill=0, normalize=True)
             tag = f"{mode}/{size}_{view_name}"  # ex) valid/small_axial
             writer.add_image(tag, grid.unsqueeze(0), epoch)
-
-# def images_to_tensorboard(
-#     writer,
-#     epoch,
-#     mode,
-#     autoencoder,
-#     z_channels,
-#     diffusion,
-#     scale_factor
-# ):
-#     """
-#     Visualize the generation on tensorboard using MONAI montage
-#     """
-#     for tag_i, size in enumerate(['small', 'medium', 'large']):
-#
-#         context = torch.tensor([[
-#             (torch.randint(60, 99, (1,)) - const.AGE_MIN) / const.AGE_DELTA,
-#             (torch.randint(1, 2, (1,)) - const.SEX_MIN) / const.SEX_DELTA,
-#             (torch.randint(1, 3, (1,)) - const.DIA_MIN) / const.DIA_DELTA,
-#             0.567, 0.539, 0.578, 0.558,
-#             0.30 * (tag_i + 1),
-#         ]], dtype=torch.float32, device=device)
-#
-#         z = torch.randn((1, z_channels, 16, 16, 16), device=device) * scale_factor
-#
-#         for t in reversed(range(1000)):
-#             z = diffusion(z, t=torch.tensor([t], device=device), cond_input={'context': context})
-#
-#         with torch.no_grad():
-#             recon_image = autoencoder.decode(z)  # (1, 1, D, H, W)
-#
-#         recon_image = (recon_image.clamp(-1, 1) + 1) / 2  # normalize to [0, 1]
-#
-#         # Use MONAI montage to get a 2D grid of slices
-#         axes = {0: "axial", 1: "coronal", 2: "sagittal"}
-#         for axis, name in axes.items():
-#             grid = axis_montage(recon_image[0, 0], axis=axis, fill=0, normalize=True)
-#             writer.add_image(f"{mode}/{name}", grid.unsqueeze(0), epoch)
 
 
 def train(args):
@@ -278,11 +240,6 @@ def train(args):
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         start_epoch = checkpoint['epoch']
 
-    best_val = float("inf")
-    min_delta = 1e-5
-    patience = 10
-    wait = 0
-
     scaler = GradScaler()
 
     log_path = "/DataRead2/chsong/tensorboard/merged_ldm_exp1"
@@ -296,7 +253,7 @@ def train(args):
         out = transforms_fn(sample_dict, threading=False)
         print("Transform output keys:", out.keys())
     except Exception as e:
-        print("❗ Actual error during transform:")
+        print("Actual error during transform:")
         import traceback
         traceback.print_exc()
         exit(1)
@@ -321,6 +278,10 @@ def train(args):
 
     global_counter = {'train': 0, 'valid': 0}  # track batch index for TensorBoard
 
+    best_val = float("inf")
+    min_delta = 1e-5
+    patience = 10
+    wait = 0
 
     # Run training
     for epoch_idx in range(start_epoch, num_epochs): # repeat for epoch times

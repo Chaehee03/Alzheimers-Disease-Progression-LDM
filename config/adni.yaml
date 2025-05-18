@@ -11,6 +11,7 @@ diffusion_params:
 ldm_params:
   down_channels : [32, 64, 128, 256]
   mid_channels : [256, 128]
+  hint_channels: 33
   down_sample : [True, True, True]
   attn_down: [False, False, True]
   time_emb_dim : 64
@@ -56,6 +57,7 @@ train_params:
   seed: 1111
   task_name: 'adni'
   ldm_batch_size: 1
+  controlnet_batch_size: 1
   vae_batch_size: 1
   vqvae_batch_size: 1
   disc_step_start: 0
@@ -65,12 +67,15 @@ train_params:
   perceptual_weight: 1.0
   kl_weight: 0.0001
   ldm_epochs: 3000
+  controlnet_epochs: 3000
   vae_epochs: 20
   vqvae_epochs: 100
   num_samples : 1
   num_grid_rows : 1
   num_workers: 8
   ldm_lr: 0.000005
+  controlnet_lr: 0.000005
+  controlnet_lr_steps : [10]
   vae_lr: 0.0001
   vae_acc_steps: 4
   vae_image_save_steps: 256
@@ -83,8 +88,13 @@ train_params:
   vqvae_autoencoder_ckpt_name: 'checkpoints/vqvae_best_checkpoint_2.pth'
   vae_discriminator_ckpt_name: 'vae_discriminator_ckpt.pth'
   vqvae_discriminator_ckpt_name: 'checkpoints/vqvae_discriminator_ckpt_2.pth'
+  controlnet_ckpt_name: 'checkpoints/controlnet_ckpt.pth'
+  controlnet_best_ckpt_name: 'checkpoints/controlnet_best_ckpt.pth'
   dataset_csv: '/home/chsong/project/longitudinal/utils/dataset.csv'
   cache_dir: '/DataRead2/chsong/cache'
+  cache_dir_B: '/DataRead2/chsong/cache_B'
+  cache_dir_sampling: '/DataRead2/chsong/cache_samplig'
   meta_csv: '/home/chsong/project/longitudinal/adni/meta'
   A_csv: '/home/chsong/project/longitudinal/adni/meta/A.csv'
   B_csv: '/home/chsong/project/longitudinal/adni/meta/B.csv'
+  evaluate_result_name: '/home/chsong/project/longitudinal/adni/samples/evaluate_result_2'

@@ -91,10 +91,10 @@ INPUT_SHAPE_1p5mm = (122, 146, 122)
 INPUT_SHAPE_AE = (120, 144, 120)
 
 # Latent shape of the autoencoder
-LATENT_SHAPE_AE = (3, 15, 18, 15)
+LATENT_SHAPE_AE = (32, 30, 36, 30)
 
-# Adjusting the latent space (with constant padding) to be divisible by 4 (2^2 where 2 are the downsampling layers of U-Net)
-LATENT_SHAPE_DM = (3, 16, 20, 16)
+# Adjusting the latent space (with constant padding) to be divisible by 8 (2^3 where 3 are the downsampling layers of U-Net)
+LATENT_SHAPE_DM = (32, 32, 40, 32)
 
 # Affine matrix for MNI space resampled to 1.5mm^3
 MNI152_1P5MM_AFFINE = np.array([
