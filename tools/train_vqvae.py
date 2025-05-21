@@ -222,6 +222,8 @@ def train(args):
     # And one cant afford higher batch sizes
     acc_steps = train_config['vae_acc_steps']
 
+
+
     for epoch_idx in range(start_epoch, num_epochs):
         recon_losses = []
         codebook_losses = []

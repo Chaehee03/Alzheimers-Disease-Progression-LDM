@@ -24,6 +24,8 @@ from monai.transforms import (
 from monai.data.image_reader import NumpyReader
 from torch.utils.data.dataloader import default_collate
 import math
+import itertools
+import numpy as np
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -160,28 +162,14 @@ def train(args):
 
     dataset_df = pd.read_csv(train_config['A_csv'])
 
-    if "latent_path" in dataset_df.columns and "latent" not in dataset_df.columns:
-        dataset_df["latent"] = dataset_df["latent_path"]
-
-    # Check missing latent paths
-    missing_latents = [
-        row['latent']
-        for _, row in dataset_df.iterrows()
-        if not os.path.exists(row['latent_path'])
-    ]
-    if missing_latents:
-        raise FileNotFoundError(
-            f"[latent_path error] Following latent paths don't exist.\n"
-            f"{missing_latents[:5]}...\nTotal {len(missing_latents)} latent paths are missing"
-        )
 
     transforms_fn = transforms.Compose([
-        LoadImageD(keys=["latent"], reader=NumpyReader()),
-        EnsureChannelFirstD(keys=["latent"], channel_dim=0),
-        SpacingD(keys=["latent"], pixdim=(2, 2, 2), mode="bilinear"),
-        ResizeWithPadOrCropD(keys=["latent"], spatial_size=(32, 40, 32)),
+        LoadImageD(keys=["latent_path"], reader=NumpyReader()),
+        EnsureChannelFirstD(keys=["latent_path"], channel_dim=0),
+        SpacingD(keys=["latent_path"], pixdim=const.RESOLUTION, mode="bilinear"),
+        ResizeWithPadOrCropD(keys=["latent_path"], spatial_size=(32, 40, 32)),
         Lambda(func=concat_covariates),
-        ToTensorD(keys=["latent", "context"], track_meta=False),
+        ToTensorD(keys=["latent_path", "context"], track_meta=False),
     ])
 
     dataset_df = dataset_df.dropna(subset=["image_path", "segm_path", "latent_path"])
@@ -189,20 +177,9 @@ def train(args):
     train_df = dataset_df[dataset_df.split == 'train']
     valid_df = dataset_df[dataset_df.split == 'valid']
 
-    for idx, row in tqdm(dataset_df.iterrows(), total=len(dataset_df)):
-        sample = {**row.to_dict(), "latent": row.latent_path}
 
-        try:
-            out = transforms_fn(sample, threading=False)
-            print("latent shape: ", idx, out["latent"].shape)  # → (C,64,64,64) 인지 확인
-            break
-        except Exception:
-            import traceback;
-            traceback.print_exc();
-            break
-
-    trainset = get_dataset_from_pd(train_df, transforms_fn, train_config['cache_dir'])
-    validset = get_dataset_from_pd(valid_df, transforms_fn, train_config['cache_dir'])
+    trainset = get_dataset_from_pd(train_df, transforms_fn, None)
+    validset = get_dataset_from_pd(valid_df, transforms_fn, None)
 
 
     train_loader = DataLoader(dataset=trainset,
@@ -242,25 +219,8 @@ def train(args):
 
     scaler = GradScaler()
 
-    log_path = "/DataRead2/chsong/tensorboard/merged_ldm_exp1"
+    log_path = "/DataRead2/chsong/tensorboard/ldm_exp3"
     writer = SummaryWriter(log_dir=log_path)
-
-    print("Applying transform manually...")
-    sample_dict = train_df.iloc[0].to_dict()
-    sample_dict['latent'] = sample_dict['latent_path']  # <- ensure 'latent' key exists
-
-    try:
-        out = transforms_fn(sample_dict, threading=False)
-        print("Transform output keys:", out.keys())
-    except Exception as e:
-        print("Actual error during transform:")
-        import traceback
-        traceback.print_exc()
-        exit(1)
-    out = transforms_fn(sample_dict, threading=False)
-    z = out["latent"].to(device)
-    scale_factor = 1 / torch.std(z)
-    print(f"Scaling factor set to {scale_factor}")
 
     print('Loading vqvae model.')
     vqvae = VQVAE(im_channels=vqvae_config['im_channels'],
@@ -275,6 +235,21 @@ def train(args):
         vqvae.load_state_dict(ckpt["model_state_dict"])
     else:
         raise Exception('VQVAE checkpoint not found')
+
+    ## Compute Average Scale Factor
+    # loader = DataLoader(trainset, batch_size=16, shuffle=True)
+    # sigmas = []
+    # with torch.no_grad():
+    #     for batch in itertools.islice(loader, 200):
+    #         sigmas.append(batch['latent_path'].std().item())
+    # scale_factor = 1 / np.mean(sigmas)
+    # print('Global scale factor =', scale_factor)
+    # torch.save({'scale_factor': scale_factor}, 'scale_factor.pt')
+
+
+    # scale_factor = torch.load('scale_factor.pt')['scale_factor']
+    scale_factor = torch.load('scale_factor_eval.pt')['scale_factor_eval']
+    print('Global scale factor loaded =', scale_factor)
 
     global_counter = {'train': 0, 'valid': 0}  # track batch index for TensorBoard
 
@@ -294,10 +269,14 @@ def train(args):
 
             for step, batch in progress_bar:
 
+                # # training 루프 직전에 latent_std = latents.std().item() 찍어보기
+                # print("latent batch std before scaling:", batch['latent_path'].std().item())
+                # print("applied scale_factor:", scale_factor)
+
                 with autocast(enabled=True):
 
                     if mode == 'train': optimizer.zero_grad(set_to_none=True)
-                    latents = batch['latent'].to(device) * scale_factor
+                    latents = batch['latent_path'].to(device) * scale_factor
                     n = latents.shape[0]
                     cond_input = {}
 

@@ -225,20 +225,16 @@ def train(args):
                                      beta_end=diffusion_config['beta_end'],
                                      ldm_scheduler=True)
 
-    def rename_keys(d):
-        d['starting_latent'] = d.pop('starting_latent_path')
-        d['followup_latent'] = d.pop('followup_latent_path')
-        return d
 
     transforms_fn = transforms.Compose([
         transforms.LoadImaged(keys=['starting_latent_path', 'followup_latent_path'],
                    reader=NumpyReader()),
-        transforms.Lambda(rename_keys),
-        transforms.EnsureChannelFirstD(keys=['starting_latent', 'followup_latent'], channel_dim=0),
-        transforms.SpacingD(keys=['starting_latent', 'followup_latent'], pixdim=(2, 2, 2), mode="bilinear"),
-        transforms.ResizeWithPadOrCropD(keys=['starting_latent', 'followup_latent'], spatial_size=(32, 40, 32)),
+        # transforms.Lambda(rename_keys),
+        transforms.EnsureChannelFirstD(keys=['starting_latent_path', 'followup_latent_path'], channel_dim=0),
+        transforms.SpacingD(keys=['starting_latent_path', 'followup_latent_path'], pixdim=(2, 2, 2), mode="bilinear"),
+        transforms.ResizeWithPadOrCropD(keys=['starting_latent_path', 'followup_latent_path'], spatial_size=(32, 40, 32)),
         transforms.Lambda(func=concat_covariates),
-        transforms.ToTensorD(keys=['starting_latent', 'followup_latent', "context"], track_meta=False),
+        transforms.ToTensorD(keys=['starting_latent_path', 'followup_latent_path', "context"], track_meta=False),
     ])
 
     dataset_df = pd.read_csv(train_config['B_csv'])
@@ -250,8 +246,10 @@ def train(args):
 
     train_df = dataset_df[dataset_df.split == 'train']
     valid_df = dataset_df[dataset_df.split == 'valid']
-    trainset = get_dataset_from_pd(train_df, transforms_fn, train_config['cache_dir_B'])
-    validset = get_dataset_from_pd(valid_df, transforms_fn, train_config['cache_dir_B'])
+    # trainset = get_dataset_from_pd(train_df, transforms_fn, train_config['cache_dir_B'])
+    # validset = get_dataset_from_pd(valid_df, transforms_fn, train_config['cache_dir_B'])
+    trainset = get_dataset_from_pd(train_df, transforms_fn, None)
+    validset = get_dataset_from_pd(valid_df, transforms_fn, None)
 
 
     train_loader = DataLoader(dataset=trainset,
@@ -305,12 +303,6 @@ def train(args):
         unet.load_state_dict(checkpoint['model_state_dict'])
 
     ########## Settings for TensorBoard Visualization ##########
-    sample_dict = train_df.iloc[0].to_dict()
-    out = transforms_fn(sample_dict, threading=False)
-    z = out['followup_latent'].to(device)
-    scale_factor = 1 / torch.std(z)
-    print(f"Scaling factor set to {scale_factor}")
-
     print('Loading vqvae model.')
     vqvae = VQVAE(im_channels=vqvae_config['im_channels'],
                   model_config=vqvae_config).to(device)
@@ -327,6 +319,9 @@ def train(args):
     ###############################################################
 
     scaler = GradScaler()
+
+    scale_factor = sf = torch.load('scale_factor.pt')['scale_factor']
+    print('Global scale factor loaded =', scale_factor)
 
     best_val = float("inf")
     min_delta = 1e-5

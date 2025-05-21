@@ -92,7 +92,6 @@ class VQVAE(nn.Module):
 
         self.decoder_norm_out = nn.GroupNorm(self.norm_channels, self.down_channels[0])
         self.decoder_conv_out = nn.Conv3d(self.down_channels[0], im_channels, kernel_size=3, padding=1)
-        self.tanh = nn.Tanh()
 
     def quantize(self, x):
         B, C, D, H, W = x.shape
@@ -154,7 +153,6 @@ class VQVAE(nn.Module):
         out = self.decoder_norm_out(out)
         out = nn.SiLU()(out)
         out = self.decoder_conv_out(out)
-        out = self.tanh(out)
         return out
 
     def forward(self, x):
